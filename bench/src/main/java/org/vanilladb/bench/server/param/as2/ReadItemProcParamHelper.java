@@ -21,9 +21,9 @@ import org.vanilladb.core.sql.Schema;
 import org.vanilladb.core.sql.Type;
 import org.vanilladb.core.sql.VarcharConstant;
 import org.vanilladb.core.sql.storedprocedure.SpResultRecord;
-import org.vanilladb.core.sql.storedprocedure.StoredProcedureParamHelper;
+import org.vanilladb.core.sql.storedprocedure.StoredProcedureHelper;
 
-public class ReadItemProcParamHelper extends StoredProcedureParamHelper {
+public class ReadItemProcParamHelper implements StoredProcedureHelper {
 
 	private int readCount;
 	private int[] readItemId;
@@ -86,6 +86,11 @@ public class ReadItemProcParamHelper extends StoredProcedureParamHelper {
 			rec.setVal("i_price_" + i, new DoubleConstant(itemPrice[i]));
 		}
 		return rec;
+	}
+
+	@Override
+	public boolean isReadOnly() {
+		return true;
 	}
 
 }

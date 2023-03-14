@@ -17,9 +17,9 @@ package org.vanilladb.bench.server.param.as2;
 
 import org.vanilladb.core.sql.Schema;
 import org.vanilladb.core.sql.storedprocedure.SpResultRecord;
-import org.vanilladb.core.sql.storedprocedure.StoredProcedureParamHelper;
+import org.vanilladb.core.sql.storedprocedure.StoredProcedureHelper;
 
-public class TestbedLoaderParamHelper extends StoredProcedureParamHelper {
+public class TestbedLoaderParamHelper implements StoredProcedureHelper {
 
 	private static final String TABLES_DDL[] = {
 			"CREATE TABLE item ( i_id INT, i_im_id INT, i_name VARCHAR(24), "
@@ -54,6 +54,11 @@ public class TestbedLoaderParamHelper extends StoredProcedureParamHelper {
 	@Override
 	public SpResultRecord newResultSetRecord() {
 		return new SpResultRecord();
+	}
+
+	@Override
+	public boolean isReadOnly() {
+		return false;
 	}
 
 }

@@ -28,7 +28,7 @@ import org.vanilladb.core.storage.tx.concurrency.LockAbortException;
 /**
  * An abstract class that denotes the stored procedure supported in VanillaDb.
  */
-public abstract class StoredProcedure<H extends StoredProcedureParamHelper> {
+public abstract class StoredProcedure<H extends StoredProcedureHelper> {
 	private static Logger logger = Logger.getLogger(StoredProcedure.class
 			.getName());
 	
