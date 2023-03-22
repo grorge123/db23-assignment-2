@@ -10,7 +10,7 @@
 		<repository>
 			<id>local-repo</id>
 			<name>LocalRepository</name>
-			<url>file://${project.basedir}../core-patch/repo</url>
+			<url>file://${project.basedir}/../core-patch/repo</url>
 		</repository>
 	</repositories>
 
