@@ -9,9 +9,11 @@ import org.vanilladb.core.sql.storedprocedure.SpResultRecord;
 import org.vanilladb.core.sql.storedprocedure.StoredProcedureHelper;
 
 public class UpdateItemPriceParamHelper implements StoredProcedureHelper {
+    private int numOfItems = 0;
+
     @Override
     public void prepareParameters(Object... pars) {
-
+        numOfItems = (Integer) pars[0];
     }
 
     @Override
@@ -31,6 +33,6 @@ public class UpdateItemPriceParamHelper implements StoredProcedureHelper {
     }
 
     public int getNumberOfItems(){
-        return 0;
+        return numOfItems;
     }
 }
