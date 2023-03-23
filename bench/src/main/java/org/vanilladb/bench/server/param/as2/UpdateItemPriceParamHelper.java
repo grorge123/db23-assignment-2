@@ -30,4 +30,7 @@ public class UpdateItemPriceParamHelper implements StoredProcedureHelper {
         return false;
     }
 
+    public int getNumberOfItems(){
+        return 0;
+    }
 }
