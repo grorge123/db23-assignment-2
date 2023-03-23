@@ -29,8 +29,8 @@ public class UpdateItemPriceTxnProc extends StoredProcedure<UpdateItemPriceParam
         Transaction tx = getTransaction();
 
         for(int i = 0 ; i < 10 ; i++){
-            int id = rand.nextInt(1, paramHelper.getNumberOfItems());
-            double updateValue = rand.nextDouble(0.0, 5.0);
+            int id = rand.nextInt(paramHelper.getNumberOfItems());
+            double updateValue = rand.nextDouble() * 5.0;
             String selectSql = "SELECT i_price FROM item WHERE i_id = " + id;
             Scan scan = StoredProcedureHelper.executeQuery(selectSql, getTransaction());
             scan.beforeFirst();

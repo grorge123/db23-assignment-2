@@ -15,7 +15,7 @@ import org.vanilladb.bench.server.param.as2.UpdateItemPriceParamHelper;
 import java.util.Random;
 import org.vanilladb.bench.benchmarks.as2.As2BenchConstants;
 
-public class UpdateItemPriceTxn implements JdbcJob {
+public class UpdateItemPriceTxnJdbcJob implements JdbcJob {
     private static Logger logger = Logger.getLogger(ReadItemTxnJdbcJob.class
             .getName());
 
@@ -32,9 +32,9 @@ public class UpdateItemPriceTxn implements JdbcJob {
 
             StringBuilder debugMsg = new StringBuilder("");
             for(int i = 0 ; i < 10 ; i++){
-                int id = rand.nextInt(1, paramHelper.getNumberOfItems());
+                int id = rand.nextInt(paramHelper.getNumberOfItems());
                 debugMsg.append(String.format("ID:%d' update price from ", id));
-                double updateValue = rand.nextDouble(0.0, 5.0);
+                double updateValue = rand.nextDouble() * 5.0;
                 String selectSql = "SELECT i_price FROM item WHERE i_id = " + id;
                 rs = statement.executeQuery(selectSql);
                 rs.beforeFirst();

@@ -20,6 +20,9 @@ import org.vanilladb.bench.benchmarks.as2.As2BenchTransactionType;
 import org.vanilladb.bench.remote.SutConnection;
 import org.vanilladb.bench.rte.RemoteTerminalEmulator;
 
+import java.util.Random;
+
+
 public class As2BenchmarkRte extends RemoteTerminalEmulator<As2BenchTransactionType> {
 	
 	private As2BenchmarkTxExecutor executor;
@@ -28,9 +31,15 @@ public class As2BenchmarkRte extends RemoteTerminalEmulator<As2BenchTransactionT
 		super(conn, statMgr, sleepTime);
 		executor = new As2BenchmarkTxExecutor(new As2ReadItemParamGen());
 	}
-	
+	private static Random rand = new Random();
 	protected As2BenchTransactionType getNextTxType() {
-		return As2BenchTransactionType.READ_ITEM;
+		int number = rand.nextInt(100);
+
+		if(number > 60){
+			return As2BenchTransactionType.UPDATE_ITEM;
+		}else{
+			return As2BenchTransactionType.READ_ITEM;
+		}
 	}
 	
 	protected As2BenchmarkTxExecutor getTxExeutor(As2BenchTransactionType type) {
