@@ -32,8 +32,8 @@ public class UpdateItemPriceTxn implements JdbcJob {
 
             StringBuilder debugMsg = new StringBuilder("");
             for(int i = 0 ; i < 10 ; i++){
-                int id = rand.nextInt(paramHelper.getNumberOfItems());
-                debugMsg.append(String.format("ID:%d' change price from ", id));
+                int id = rand.nextInt(1, paramHelper.getNumberOfItems());
+                debugMsg.append(String.format("ID:%d' update price from ", id));
                 double updateValue = rand.nextDouble(0.0, 5.0);
                 String selectSql = "SELECT i_price FROM item WHERE i_id = " + id;
                 rs = statement.executeQuery(selectSql);
@@ -51,11 +51,11 @@ public class UpdateItemPriceTxn implements JdbcJob {
                     newPrice = oldPrice + updateValue;
                 }
                 debugMsg.append(String.format("%f.", newPrice));
-                String updateSql = "UPDATE item SET i_price=" + oldPrice + "WHERE i_id=" + id;
+                String updateSql = "UPDATE item SET i_price=" + newPrice + "WHERE i_id=" + id;
                 int cnt = statement.executeUpdate(updateSql);
-                debugMsg.append("\n");
             }
-            logger.info(debugMsg.toString());
+            if (logger.isLoggable(Level.INFO))
+                logger.info(debugMsg.toString());
             return new VanillaDbJdbcResultSet(true, "Success");
         } catch (Exception e) {
             if (logger.isLoggable(Level.WARNING))
