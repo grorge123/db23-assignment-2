@@ -22,39 +22,40 @@ public class UpdateItemPriceTxnProc extends StoredProcedure<UpdateItemPriceParam
     private static Logger logger = Logger.getLogger(As2CheckDatabaseProc.class.getName());
     @Override
     protected void executeSql() {
-        if (logger.isLoggable(Level.INFO))
+        if (logger.isLoggable(Level.FINE))
             logger.info("Checking database for the as2 benchmarks...");
 
         UpdateItemPriceParamHelper paramHelper = getParamHelper();
         Transaction tx = getTransaction();
 
         for(int i = 0 ; i < 10 ; i++){
-            int id = rand.nextInt(paramHelper.getNumberOfItems());
+            int id = rand.nextInt(paramHelper.getNumberOfItems()) + 1;
             double updateValue = rand.nextDouble() * 5.0;
             String selectSql = "SELECT i_price FROM item WHERE i_id = " + id;
-            Scan scan = StoredProcedureHelper.executeQuery(selectSql, getTransaction());
+            Scan scan = StoredProcedureHelper.executeQuery(selectSql, tx);
             scan.beforeFirst();
             if(!scan.next()){
-                if (logger.isLoggable(Level.SEVERE))
-                    logger.severe(String.format("%d not found.", id));
+                if (logger.isLoggable(Level.FINE))
+                    logger.info(String.format("%d not found.", id));
                 abort("random wrong value");
-            }
-            double oldPrice = (Double) scan.getVal("i_price").asJavaVal();
-            double newPrice = 0;
-            scan.close();
-            if(oldPrice > As2BenchConstants.MAX_PRICE){
-                newPrice = As2BenchConstants.MIN_PRICE;
             }else{
-                newPrice = oldPrice + updateValue;
+                double oldPrice = (Double) scan.getVal("i_price").asJavaVal();
+                double newPrice = 0;
+                scan.close();
+                if(oldPrice > As2BenchConstants.MAX_PRICE){
+                    newPrice = As2BenchConstants.MIN_PRICE;
+                }else{
+                    newPrice = oldPrice + updateValue;
+                }
+                String updateSql = "UPDATE item SET i_price=" + newPrice + "WHERE i_id=" + id;
+                StoredProcedureHelper.executeUpdate(updateSql, tx);
+                if (logger.isLoggable(Level.FINE))
+                    logger.info(String.format("[Proc] ID:%d update price from %f to %f.\n", id, oldPrice, newPrice));
             }
-            String updateSql = "UPDATE item SET i_price=" + newPrice + "WHERE i_id=" + id;
-            StoredProcedureHelper.executeUpdate(updateSql, tx);
-//            if (logger.isLoggable(Level.INFO))
-//                logger.info(String.format("[Proc] ID:%d update price from %f to %f.\n", id, oldPrice, newPrice));
         }
 
 
-        if (logger.isLoggable(Level.INFO))
+        if (logger.isLoggable(Level.FINE))
             logger.info("Checking completed.");
     }
 }
