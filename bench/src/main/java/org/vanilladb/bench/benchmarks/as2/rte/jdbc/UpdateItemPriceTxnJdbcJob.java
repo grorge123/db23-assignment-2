@@ -31,7 +31,7 @@ public class UpdateItemPriceTxnJdbcJob implements JdbcJob {
             ResultSet rs = null;
 
             for(int i = 0 ; i < 10 ; i++){
-                int id = rand.nextInt(paramHelper.getNumberOfItems());
+                int id = rand.nextInt(paramHelper.getNumberOfItems()) + 1;
                 double updateValue = rand.nextDouble() * 5.0;
                 String selectSql = "SELECT i_price FROM item WHERE i_id = " + id;
                 rs = statement.executeQuery(selectSql);
@@ -39,8 +39,11 @@ public class UpdateItemPriceTxnJdbcJob implements JdbcJob {
                 double oldPrice = 0, newPrice = 0;
                 if (rs.next()) {
                     oldPrice = rs.getDouble("i_price");
-                } else
+                } else{
+                    if (logger.isLoggable(Level.INFO))
+                        logger.info(String.format("%d not found.", id));
                     throw new RuntimeException("cannot find the record with i_id = " + id);
+                }
                 rs.close();
                 if(oldPrice > As2BenchConstants.MAX_PRICE){
                     newPrice = As2BenchConstants.MIN_PRICE;
