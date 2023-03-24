@@ -32,6 +32,9 @@ import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+
+import java.util.Arrays;
+
 public class StatisticMgr {
 	private static Logger logger = Logger.getLogger(StatisticMgr.class.getName());
 
@@ -66,6 +69,7 @@ public class StatisticMgr {
 	private int timelineGranularity;
 	private List<TxnResultSet> resultSets = new ArrayList<TxnResultSet>();
 	private List<BenchTransactionType> allTxTypes;
+	private List<Long> allTimeList = new ArrayList<Long>();
 	private String fileNamePostfix = "";
 	private long recordStartTime = -1;
 
@@ -95,6 +99,7 @@ public class StatisticMgr {
 	public synchronized void processTxnResult(TxnResultSet trs) {
 		if (recordStartTime == -1)
 			recordStartTime = trs.getTxnEndTime();
+		allTimeList.add(trs.getTxnEndTime() - recordStartTime);
 		resultSets.add(trs);
 	}
 
@@ -106,6 +111,7 @@ public class StatisticMgr {
 				fileName += "-" + fileNamePostfix; // E.g. "20220324-200824-postfix"
 
 			outputDetailReport(fileName);
+			outputCsvReport(fileName);
 
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -115,6 +121,44 @@ public class StatisticMgr {
 			logger.info("Finish creating benchmark report.");
 	}
 
+	private void outputCsvReport(String fileName) throws IOException {
+		try (BufferedWriter writer = new BufferedWriter(new FileWriter(new File(outputDir, fileName + ".csv")))) {
+			writer.write("time(sec), throughput(txs), avg_latency(ms), min(ms), max(ms), 25th_lat(ms), median_lat(ms), 75th_lat(ms)");
+			writer.newLine();
+			final Long unit = 5000000000L;
+			List<Long> timeList = new ArrayList<Long>();
+			Long limit = 1L;
+			Long lastTime = 0L;
+			for(long time : allTimeList){
+				if(time < limit * unit){
+					timeList.add(time - lastTime);
+					lastTime = time;
+				}else{
+					Object[] objectArray = timeList.toArray();
+					int length = objectArray.length;
+					Long[]  timeArray = new Long[length];
+					Long min = 0L, max = 0L, avg = 0L;
+					for(int i = 0; i < length; i++) {
+						timeArray[i] = (Long) objectArray[i];
+						min = Math.min(min, timeArray[i]);
+						max = Math.max(max, timeArray[i]);
+						avg += timeArray[i];
+					}
+					avg /= length;
+					Arrays.sort(timeArray);
+					writer.write(String.format("%d,%d,%d,%d,%d,%d,%d,%d",
+							limit * 5,
+							length, TimeUnit.NANOSECONDS.toMillis(avg), TimeUnit.NANOSECONDS.toMillis(min), TimeUnit.NANOSECONDS.toMillis(max),
+							TimeUnit.NANOSECONDS.toMillis(timeArray[(int)((double)length * 0.25)]),
+							TimeUnit.NANOSECONDS.toMillis(timeArray[(int)((double)length * 0.5)]),
+							TimeUnit.NANOSECONDS.toMillis(timeArray[(int)((double)length * 0.75)])));
+					writer.newLine();
+					limit += 1;
+					timeList.clear();
+				}
+			}
+		}
+	}
 	private void outputDetailReport(String fileName) throws IOException {
 		Map<BenchTransactionType, TxnStatistic> txnStatistics = new HashMap<BenchTransactionType, TxnStatistic>();
 		Map<BenchTransactionType, Integer> abortedCounts = new HashMap<BenchTransactionType, Integer>();
