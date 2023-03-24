@@ -30,10 +30,8 @@ public class UpdateItemPriceTxnJdbcJob implements JdbcJob {
             Statement statement = conn.createStatement();
             ResultSet rs = null;
 
-            StringBuilder debugMsg = new StringBuilder("");
             for(int i = 0 ; i < 10 ; i++){
                 int id = rand.nextInt(paramHelper.getNumberOfItems());
-                debugMsg.append(String.format("ID:%d' update price from ", id));
                 double updateValue = rand.nextDouble() * 5.0;
                 String selectSql = "SELECT i_price FROM item WHERE i_id = " + id;
                 rs = statement.executeQuery(selectSql);
@@ -41,7 +39,6 @@ public class UpdateItemPriceTxnJdbcJob implements JdbcJob {
                 double oldPrice = 0, newPrice = 0;
                 if (rs.next()) {
                     oldPrice = rs.getDouble("i_price");
-                    debugMsg.append(String.format("%f to", oldPrice));
                 } else
                     throw new RuntimeException("cannot find the record with i_id = " + id);
                 rs.close();
@@ -50,12 +47,11 @@ public class UpdateItemPriceTxnJdbcJob implements JdbcJob {
                 }else{
                     newPrice = oldPrice + updateValue;
                 }
-                debugMsg.append(String.format("%f.", newPrice));
                 String updateSql = "UPDATE item SET i_price=" + newPrice + "WHERE i_id=" + id;
                 int cnt = statement.executeUpdate(updateSql);
+//                if (logger.isLoggable(Level.INFO))
+//                    logger.info(String.format("[JDBC] ID:%d update price from %f to %f.\n", id, oldPrice, newPrice));
             }
-            if (logger.isLoggable(Level.INFO))
-                logger.info(debugMsg.toString());
             return new VanillaDbJdbcResultSet(true, "Success");
         } catch (Exception e) {
             if (logger.isLoggable(Level.WARNING))

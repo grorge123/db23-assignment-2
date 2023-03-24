@@ -49,8 +49,8 @@ public class UpdateItemPriceTxnProc extends StoredProcedure<UpdateItemPriceParam
             }
             String updateSql = "UPDATE item SET i_price=" + newPrice + "WHERE i_id=" + id;
             StoredProcedureHelper.executeUpdate(updateSql, tx);
-            if (logger.isLoggable(Level.INFO))
-                logger.info(String.format("ID:%d update price from %f to %f.", id, oldPrice, newPrice));
+//            if (logger.isLoggable(Level.INFO))
+//                logger.info(String.format("[Proc] ID:%d update price from %f to %f.\n", id, oldPrice, newPrice));
         }
 
 
