@@ -22,8 +22,6 @@ public class UpdateItemPriceTxnProc extends StoredProcedure<UpdateItemPriceParam
     private static Logger logger = Logger.getLogger(As2CheckDatabaseProc.class.getName());
     @Override
     protected void executeSql() {
-        if (logger.isLoggable(Level.FINE))
-            logger.info("Checking database for the as2 benchmarks...");
 
         UpdateItemPriceParamHelper paramHelper = getParamHelper();
         Transaction tx = getTransaction();
@@ -35,7 +33,7 @@ public class UpdateItemPriceTxnProc extends StoredProcedure<UpdateItemPriceParam
             Scan scan = StoredProcedureHelper.executeQuery(selectSql, tx);
             scan.beforeFirst();
             if(!scan.next()){
-                if (logger.isLoggable(Level.FINE))
+                if (logger.isLoggable(Level.INFO))
                     logger.info(String.format("%d not found.", id));
                 abort("random wrong value");
             }else{
@@ -49,13 +47,10 @@ public class UpdateItemPriceTxnProc extends StoredProcedure<UpdateItemPriceParam
                 }
                 String updateSql = "UPDATE item SET i_price=" + newPrice + "WHERE i_id=" + id;
                 StoredProcedureHelper.executeUpdate(updateSql, tx);
-                if (logger.isLoggable(Level.FINE))
-                    logger.info(String.format("[Proc] ID:%d update price from %f to %f.\n", id, oldPrice, newPrice));
+//                if (logger.isLoggable(Level.FINE))
+//                    logger.info(String.format("[Proc] ID:%d update price from %f to %f.\n", id, oldPrice, newPrice));
             }
         }
 
-
-        if (logger.isLoggable(Level.FINE))
-            logger.info("Checking completed.");
     }
 }
