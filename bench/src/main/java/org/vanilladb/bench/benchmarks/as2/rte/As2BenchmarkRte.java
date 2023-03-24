@@ -20,6 +20,7 @@ import org.vanilladb.bench.VanillaBench;
 import org.vanilladb.bench.benchmarks.as2.As2BenchTransactionType;
 import org.vanilladb.bench.remote.SutConnection;
 import org.vanilladb.bench.rte.RemoteTerminalEmulator;
+import org.vanilladb.bench.util.BenchProperties;
 
 import java.util.Random;
 import java.util.logging.Logger;
@@ -29,6 +30,12 @@ public class As2BenchmarkRte extends RemoteTerminalEmulator<As2BenchTransactionT
 	
 	private As2BenchmarkTxExecutor readExecutor;
 	private As2BenchmarkTxExecutor updateExecutor;
+	private static final double READ_WRITE_TX_RATE;
+
+	static {
+		READ_WRITE_TX_RATE = BenchProperties.getLoader()
+				.getPropertyAsDouble(As2BenchmarkRte.class.getName() + ".READ_WRITE_TX_RATE", 0.6);
+	}
 
 	public As2BenchmarkRte(SutConnection conn, StatisticMgr statMgr, long sleepTime) {
 		super(conn, statMgr, sleepTime);
@@ -39,10 +46,10 @@ public class As2BenchmarkRte extends RemoteTerminalEmulator<As2BenchTransactionT
 	protected As2BenchTransactionType getNextTxType() {
 		int number = rand.nextInt(100);
 		As2BenchTransactionType returnValue;
-		if(number > 60){
-			returnValue = As2BenchTransactionType.READ_ITEM;
-		}else{
+		if(number > READ_WRITE_TX_RATE * 100){
 			returnValue = As2BenchTransactionType.UPDATE_ITEM;
+		}else{
+			returnValue = As2BenchTransactionType.READ_ITEM;
 		}
 		return returnValue;
 	}
