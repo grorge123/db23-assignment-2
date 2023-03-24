@@ -16,33 +16,45 @@
 package org.vanilladb.bench.benchmarks.as2.rte;
 
 import org.vanilladb.bench.StatisticMgr;
+import org.vanilladb.bench.VanillaBench;
 import org.vanilladb.bench.benchmarks.as2.As2BenchTransactionType;
 import org.vanilladb.bench.remote.SutConnection;
 import org.vanilladb.bench.rte.RemoteTerminalEmulator;
 
 import java.util.Random;
+import java.util.logging.Logger;
 
 
 public class As2BenchmarkRte extends RemoteTerminalEmulator<As2BenchTransactionType> {
 	
-	private As2BenchmarkTxExecutor executor;
+	private As2BenchmarkTxExecutor readExecutor;
+	private As2BenchmarkTxExecutor updateExecutor;
 
 	public As2BenchmarkRte(SutConnection conn, StatisticMgr statMgr, long sleepTime) {
 		super(conn, statMgr, sleepTime);
-		executor = new As2BenchmarkTxExecutor(new As2ReadItemParamGen());
+		readExecutor = new As2BenchmarkTxExecutor(new As2ReadItemParamGen());
+		updateExecutor = new As2BenchmarkTxExecutor(new UpdateItemParamGen());
 	}
 	private static Random rand = new Random();
 	protected As2BenchTransactionType getNextTxType() {
 		int number = rand.nextInt(100);
-
+		As2BenchTransactionType returnValue;
 		if(number > 60){
-			return As2BenchTransactionType.UPDATE_ITEM;
+			returnValue = As2BenchTransactionType.READ_ITEM;
 		}else{
-			return As2BenchTransactionType.READ_ITEM;
+			returnValue = As2BenchTransactionType.UPDATE_ITEM;
 		}
+		return returnValue;
 	}
 	
 	protected As2BenchmarkTxExecutor getTxExeutor(As2BenchTransactionType type) {
-		return executor;
+		switch (type){
+			case READ_ITEM:
+				return readExecutor;
+			case UPDATE_ITEM:
+				return updateExecutor;
+			default:
+				throw new RuntimeException("Not implement");
+		}
 	}
 }
