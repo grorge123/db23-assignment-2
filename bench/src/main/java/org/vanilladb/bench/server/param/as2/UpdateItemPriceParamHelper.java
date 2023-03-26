@@ -12,11 +12,19 @@ import java.util.Random;
 
 public class UpdateItemPriceParamHelper implements StoredProcedureHelper {
     private int numOfItems = 0;
+    private int[] updateId = new int[10];
+    private double[] updateValue = new double[10];
     private static Random rand = new Random();
     @Override
     public void prepareParameters(Object... pars) {
-
-        numOfItems = (Integer) pars[0];
+        int indexCnt = 0;
+        numOfItems = (Integer) pars[indexCnt++];
+        for(int i = 0 ; i < 10 ; i++){
+            updateId[i] = (Integer) pars[indexCnt++];
+        }
+        for(int i = 0 ; i < 10 ; i++){
+            updateValue[i] = (Double) pars[indexCnt++];
+        }
     }
 
     @Override
@@ -38,10 +46,10 @@ public class UpdateItemPriceParamHelper implements StoredProcedureHelper {
     public int getNumberOfItems(){
         return numOfItems;
     }
-    public int getRandomId(){
-        return rand.nextInt(getNumberOfItems()) + 1;
+    public int getRandomId(int idx){
+        return updateId[idx];
     }
-    public double getUpdateValue(){
-        return rand.nextDouble() * 5.0;
+    public double getUpdateValue(int idx){
+        return updateValue[idx];
     }
 }

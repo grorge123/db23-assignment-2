@@ -3,6 +3,9 @@ package org.vanilladb.bench.benchmarks.as2.rte;
 import org.vanilladb.bench.benchmarks.as2.As2BenchConstants;
 import org.vanilladb.bench.benchmarks.as2.As2BenchTransactionType;
 import org.vanilladb.bench.rte.TxParamGenerator;
+import org.vanilladb.bench.util.RandomValueGenerator;
+
+import java.util.ArrayList;
 
 public class UpdateItemParamGen implements TxParamGenerator<As2BenchTransactionType> {
 
@@ -14,6 +17,15 @@ public class UpdateItemParamGen implements TxParamGenerator<As2BenchTransactionT
     @Override
     public Object[] generateParameter() {
         // [# of items]
-        return new Object[] {As2BenchConstants.NUM_ITEMS};
+        RandomValueGenerator rvg = new RandomValueGenerator();
+        ArrayList<Object> paramList = new ArrayList<Object>();
+        paramList.add(As2BenchConstants.NUM_ITEMS);
+        for(int i = 0 ; i < 10 ; i++){
+            paramList.add(rvg.number(1, As2BenchConstants.NUM_ITEMS));
+        }
+        for(int i = 0 ; i < 10 ; i++){
+            paramList.add(rvg.randomDoubleIncrRange(0, 5, 0.000001));
+        }
+        return paramList.toArray(new Object[0]);
     }
 }

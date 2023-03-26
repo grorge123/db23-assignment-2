@@ -31,8 +31,8 @@ public class UpdateItemPriceTxnJdbcJob implements JdbcJob {
             ResultSet rs = null;
 
             for(int i = 0 ; i < 10 ; i++){
-                int id = paramHelper.getRandomId();
-                double updateValue = paramHelper.getUpdateValue();
+                int id = paramHelper.getRandomId(i);
+                double updateValue = paramHelper.getUpdateValue(i);
                 String selectSql = "SELECT i_price FROM item WHERE i_id = " + id;
                 rs = statement.executeQuery(selectSql);
                 rs.beforeFirst();
