@@ -18,7 +18,6 @@ public class UpdateItemPriceTxnProc extends StoredProcedure<UpdateItemPriceParam
     public UpdateItemPriceTxnProc() {
         super(new UpdateItemPriceParamHelper());
     }
-    private static Random rand = new Random();
     private static Logger logger = Logger.getLogger(As2CheckDatabaseProc.class.getName());
     @Override
     protected void executeSql() {
@@ -27,8 +26,8 @@ public class UpdateItemPriceTxnProc extends StoredProcedure<UpdateItemPriceParam
         Transaction tx = getTransaction();
 
         for(int i = 0 ; i < 10 ; i++){
-            int id = rand.nextInt(paramHelper.getNumberOfItems()) + 1;
-            double updateValue = rand.nextDouble() * 5.0;
+            int id = paramHelper.getRandomId();
+            double updateValue = paramHelper.getUpdateValue();
             String selectSql = "SELECT i_price FROM item WHERE i_id = " + id;
             Scan scan = StoredProcedureHelper.executeQuery(selectSql, tx);
             scan.beforeFirst();

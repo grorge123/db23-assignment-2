@@ -16,7 +16,7 @@ import java.util.Random;
 import org.vanilladb.bench.benchmarks.as2.As2BenchConstants;
 
 public class UpdateItemPriceTxnJdbcJob implements JdbcJob {
-    private static Logger logger = Logger.getLogger(ReadItemTxnJdbcJob.class
+    private static Logger logger = Logger.getLogger(UpdateItemPriceTxnJdbcJob.class
             .getName());
 
     private static Random rand = new Random();
@@ -31,8 +31,8 @@ public class UpdateItemPriceTxnJdbcJob implements JdbcJob {
             ResultSet rs = null;
 
             for(int i = 0 ; i < 10 ; i++){
-                int id = rand.nextInt(paramHelper.getNumberOfItems()) + 1;
-                double updateValue = rand.nextDouble() * 5.0;
+                int id = paramHelper.getRandomId();
+                double updateValue = paramHelper.getUpdateValue();
                 String selectSql = "SELECT i_price FROM item WHERE i_id = " + id;
                 rs = statement.executeQuery(selectSql);
                 rs.beforeFirst();
@@ -55,6 +55,7 @@ public class UpdateItemPriceTxnJdbcJob implements JdbcJob {
 //                if (logger.isLoggable(Level.INFO))
 //                    logger.info(String.format("[JDBC] ID:%d update price from %f to %f.\n", id, oldPrice, newPrice));
             }
+            conn.commit();
             return new VanillaDbJdbcResultSet(true, "Success");
         } catch (Exception e) {
             if (logger.isLoggable(Level.WARNING))
