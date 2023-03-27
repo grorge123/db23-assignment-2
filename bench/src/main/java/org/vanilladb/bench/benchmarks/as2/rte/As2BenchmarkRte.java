@@ -16,24 +16,52 @@
 package org.vanilladb.bench.benchmarks.as2.rte;
 
 import org.vanilladb.bench.StatisticMgr;
+import org.vanilladb.bench.VanillaBench;
 import org.vanilladb.bench.benchmarks.as2.As2BenchTransactionType;
 import org.vanilladb.bench.remote.SutConnection;
 import org.vanilladb.bench.rte.RemoteTerminalEmulator;
+import org.vanilladb.bench.util.BenchProperties;
+
+import java.util.Random;
+import java.util.logging.Logger;
+
 
 public class As2BenchmarkRte extends RemoteTerminalEmulator<As2BenchTransactionType> {
 	
-	private As2BenchmarkTxExecutor executor;
+	private As2BenchmarkTxExecutor readExecutor;
+	private As2BenchmarkTxExecutor updateExecutor;
+	private static final double READ_WRITE_TX_RATE;
+
+	static {
+		READ_WRITE_TX_RATE = BenchProperties.getLoader()
+				.getPropertyAsDouble(As2BenchmarkRte.class.getName() + ".READ_WRITE_TX_RATE", 0.6);
+	}
 
 	public As2BenchmarkRte(SutConnection conn, StatisticMgr statMgr, long sleepTime) {
 		super(conn, statMgr, sleepTime);
-		executor = new As2BenchmarkTxExecutor(new As2ReadItemParamGen());
+		readExecutor = new As2BenchmarkTxExecutor(new As2ReadItemParamGen());
+		updateExecutor = new As2BenchmarkTxExecutor(new UpdateItemParamGen());
 	}
-	
+	private static Random rand = new Random();
 	protected As2BenchTransactionType getNextTxType() {
-		return As2BenchTransactionType.READ_ITEM;
+		int number = rand.nextInt(100);
+		As2BenchTransactionType returnValue;
+		if(number > READ_WRITE_TX_RATE * 100){
+			returnValue = As2BenchTransactionType.UPDATE_ITEM;
+		}else{
+			returnValue = As2BenchTransactionType.READ_ITEM;
+		}
+		return returnValue;
 	}
 	
 	protected As2BenchmarkTxExecutor getTxExeutor(As2BenchTransactionType type) {
-		return executor;
+		switch (type){
+			case READ_ITEM:
+				return readExecutor;
+			case UPDATE_ITEM:
+				return updateExecutor;
+			default:
+				throw new RuntimeException("Not implement");
+		}
 	}
 }
