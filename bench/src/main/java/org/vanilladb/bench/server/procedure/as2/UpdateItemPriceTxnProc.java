@@ -18,24 +18,21 @@ public class UpdateItemPriceTxnProc extends StoredProcedure<UpdateItemPriceParam
     public UpdateItemPriceTxnProc() {
         super(new UpdateItemPriceParamHelper());
     }
-    private static Random rand = new Random();
-    private static Logger logger = Logger.getLogger(As2CheckDatabaseProc.class.getName());
+    private static Logger logger = Logger.getLogger(UpdateItemPriceTxnProc.class.getName());
     @Override
     protected void executeSql() {
-        if (logger.isLoggable(Level.FINE))
-            logger.info("Checking database for the as2 benchmarks...");
 
         UpdateItemPriceParamHelper paramHelper = getParamHelper();
         Transaction tx = getTransaction();
 
         for(int i = 0 ; i < 10 ; i++){
-            int id = rand.nextInt(paramHelper.getNumberOfItems()) + 1;
-            double updateValue = rand.nextDouble() * 5.0;
+            int id = paramHelper.getRandomId(i);
+            double updateValue = paramHelper.getUpdateValue(i);
             String selectSql = "SELECT i_price FROM item WHERE i_id = " + id;
             Scan scan = StoredProcedureHelper.executeQuery(selectSql, tx);
             scan.beforeFirst();
             if(!scan.next()){
-                if (logger.isLoggable(Level.FINE))
+                if (logger.isLoggable(Level.INFO))
                     logger.info(String.format("%d not found.", id));
                 abort("random wrong value");
             }else{
@@ -49,13 +46,10 @@ public class UpdateItemPriceTxnProc extends StoredProcedure<UpdateItemPriceParam
                 }
                 String updateSql = "UPDATE item SET i_price=" + newPrice + "WHERE i_id=" + id;
                 StoredProcedureHelper.executeUpdate(updateSql, tx);
-                if (logger.isLoggable(Level.FINE))
-                    logger.info(String.format("[Proc] ID:%d update price from %f to %f.\n", id, oldPrice, newPrice));
+//                if (logger.isLoggable(Level.FINE))
+//                    logger.info(String.format("[Proc] ID:%d update price from %f to %f.\n", id, oldPrice, newPrice));
             }
         }
 
-
-        if (logger.isLoggable(Level.FINE))
-            logger.info("Checking completed.");
     }
 }
