@@ -1,0 +1,9 @@
+由最早到最晚的bench result，分別是在測試
+
+1. rw ratio = 0.3, SP mode.
+2. rw ratio = 0.6, SP mode.
+3. rw ratio = 1.0, SP mode.
+
+4. rw ratio = 0.3, JDBC mode.
+5. rw ratio = 0.6, JDBC mode.
+6. rw ratio = 1.0, JDBC mode.
