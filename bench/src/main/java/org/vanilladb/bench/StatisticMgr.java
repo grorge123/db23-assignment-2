@@ -127,13 +127,11 @@ public class StatisticMgr {
 			writer.newLine();
 			final Long unit = 5000000000L;
 			List<Long> timeList = new ArrayList<Long>();
-			Long limit = 1L;
-			Long lastTime = 0L;
-			for(long time : allTimeList){
-				if(time < limit * unit){
-					timeList.add(time - lastTime);
-					lastTime = time;
-				}else{
+			Long cnt = 1L;
+			Long startTime = recordStartTime;
+			Long lastTime = recordStartTime;
+			for(TxnResultSet resultSet : resultSets){
+				if(startTime + unit < resultSet.getTxnEndTime()){
 					Object[] objectArray = timeList.toArray();
 					int length = objectArray.length;
 					Long[]  timeArray = new Long[length];
@@ -147,15 +145,18 @@ public class StatisticMgr {
 					avg /= length;
 					Arrays.sort(timeArray);
 					writer.write(String.format("%d,%d,%d,%d,%d,%d,%d,%d",
-							limit * 5,
+							cnt * 5,
 							length, TimeUnit.NANOSECONDS.toMillis(avg), TimeUnit.NANOSECONDS.toMillis(min), TimeUnit.NANOSECONDS.toMillis(max),
 							TimeUnit.NANOSECONDS.toMillis(timeArray[(int)((double)length * 0.25)]),
 							TimeUnit.NANOSECONDS.toMillis(timeArray[(int)((double)length * 0.5)]),
 							TimeUnit.NANOSECONDS.toMillis(timeArray[(int)((double)length * 0.75)])));
 					writer.newLine();
-					limit += 1;
+					cnt += 1;
+					startTime = lastTime;
 					timeList.clear();
 				}
+				timeList.add(resultSet.getTxnResponseTime());
+				lastTime = resultSet.getTxnEndTime();
 			}
 		}
 	}
