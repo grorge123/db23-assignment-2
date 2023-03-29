@@ -80,6 +80,16 @@ time(sec), throughput(txs), avg_latency(ms), min(ms), max(ms), 25th_lat(ms), med
 
 The name of the reports should be `[Year][Month][Day]-[Hour][Minute][Sec]-as2bench.csv`. E.g. `20230222-160720-as2bench.csv`
 
+## Testing log
+
+1. 20230329-063314-as2bench is for rw ratio = 0.6, SP mode.
+2. 20230329-064209-as2bench is for rw ratio = 1.0, SP mode.
+3. 20230329-065015-as2bench is for rw ratio = 0.3, SP mode.
+
+4. ? is for rw ratio = 0.6, JDBC mode.
+5. ? is for rw ratio = 1.0, JDBC mode.
+6. ? is for rw ratio = 0.3, JDBC mode.
+
 ## Phase 1 Report
 
 - How you implement the transaction using JDBC and stored procedures briefly. Please do not paste your entire code here.
@@ -144,7 +154,6 @@ If we find you copy someone’s code, you will get **0 point** for this assignme
 3. Check out `As2BenchConstants` to see how we get a value from `vanillabench.properties`.
 4. When you implement `UpdateItemPriceTxn`, you need method `executeUpdate` which usage is like method `executeQuery` in `ReadItemTxnJdbcJob`.
 5. If you encounter any problem, take a look at our [FAQ repository](https://shwu10.cs.nthu.edu.tw/courses/databases/2023-spring/faq) first.
-
 
 ## Deadline
 

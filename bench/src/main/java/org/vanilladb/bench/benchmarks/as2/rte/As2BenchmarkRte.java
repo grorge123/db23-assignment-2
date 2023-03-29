@@ -47,9 +47,9 @@ public class As2BenchmarkRte extends RemoteTerminalEmulator<As2BenchTransactionT
 		int number = rand.nextInt(100);
 		As2BenchTransactionType returnValue;
 		if(number > READ_WRITE_TX_RATE * 100){
-			returnValue = As2BenchTransactionType.READ_ITEM;
-		}else{
 			returnValue = As2BenchTransactionType.UPDATE_ITEM;
+		}else{
+			returnValue = As2BenchTransactionType.READ_ITEM;
 		}
 		return returnValue;
 	}
